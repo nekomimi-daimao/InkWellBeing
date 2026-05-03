@@ -1,7 +1,10 @@
 type LineProcessor = (lines: string[]) => string[];
 
-export const trimLines: LineProcessor = (lines) =>
-  lines.map((line) => line.trim());
+export const sanitizeEmptyLines: LineProcessor = (lines) => {
+  return lines.map((line) => {
+    return line.trim() === "" ? "" : line;
+  });
+};
 
 export const indentJapaneseNovel: LineProcessor = (lines) => {
   const BRACKET_PAIRS: Record<string, string> = {
@@ -58,5 +61,6 @@ export const indentJapaneseNovel: LineProcessor = (lines) => {
 };
 
 export const all: LineProcessor[] = [
+  sanitizeEmptyLines,
   indentJapaneseNovel,
 ];
