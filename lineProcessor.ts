@@ -22,6 +22,8 @@ export const indentJapaneseNovel: LineProcessor = (lines) => {
       return line;
     }
 
+    line = line.replace(/^ (?! )/, "　");
+
     if (line.startsWith("　")) {
       if (activeClosingBracket && line.endsWith(activeClosingBracket)) {
         activeClosingBracket = null;
