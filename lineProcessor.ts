@@ -15,18 +15,43 @@ export const indentJapaneseNovel: LineProcessor = (lines) => {
     "《": "》",
   };
 
+  let activeClosingBracket: string | null = null;
+
   return lines.map((line) => {
-    if (!line || line.startsWith("　")) {
+    if (!line) {
       return line;
     }
 
-    const firstChar = line.trimStart().charAt(0);
-    const bracket = BRACKET_PAIRS[firstChar];
-    if (!bracket) {
+    if (line.startsWith("　")) {
+      if (activeClosingBracket && line.endsWith(activeClosingBracket)) {
+        activeClosingBracket = null;
+      }
+      return line;
+    }
+
+    if (activeClosingBracket) {
+      if (activeClosingBracket && line.endsWith(activeClosingBracket)) {
+        activeClosingBracket = null;
+      }
       return `　${line}`;
     }
 
-    return line.trimEnd().at(-1) === bracket ? line : `　${line}`;
+    const firstChar = line[0];
+    const closing = BRACKET_PAIRS[firstChar];
+
+    if (closing) {
+      const hasClosing = line.endsWith(closing);
+      const isEndWithClosing = line.trimEnd().endsWith(closing);
+
+      if (hasClosing && isEndWithClosing) {
+        return line;
+      } else if (!hasClosing) {
+        activeClosingBracket = closing;
+        return line;
+      }
+    }
+
+    return `　${line}`;
   });
 };
 
